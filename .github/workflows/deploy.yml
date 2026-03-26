@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/github-pages-deployment-3sLUY
   workflow_dispatch:
 
 permissions:
