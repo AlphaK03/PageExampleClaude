@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algoritmos de Ordenamiento</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --code-bg: #1f2937;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header .logo {
+      font-size: 1.5rem;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .intro {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .intro p { color: var(--muted); margin-top: 0.5rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: var(--accent); }
+
+    .card-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h3 { font-size: 1rem; font-weight: 600; }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .badge.green { background: rgba(63,185,80,0.15); color: var(--accent2); }
+    .badge.yellow { background: rgba(210,153,34,0.15); color: #d29922; }
+    .badge.red { background: rgba(247,129,102,0.15); color: var(--accent3); }
+
+    .card-body { padding: 1rem 1.2rem; }
+
+    .card-body p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .complexity {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .complexity span { display: flex; align-items: center; gap: 4px; }
+    .complexity .label { color: var(--text); font-weight: 500; }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      line-height: 1.5;
+    }
+
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .num { color: #79c0ff; }
+    .cm  { color: #8b949e; font-style: italic; }
+    .str { color: #a5d6ff; }
+    .op  { color: #ff7b72; }
+
+    .demo-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .demo-section h2 {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    select, button, input[type=number] {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #0d1117;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    button.primary:hover { opacity: 0.85; }
+    button:hover { border-color: var(--accent); }
+
+    #bars-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 160px;
+      padding: 0.5rem;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+      transition: height 0.05s ease;
+      min-width: 4px;
+    }
+
+    .bar.comparing { background: #f78166; }
+    .bar.sorted    { background: var(--accent2); }
+
+    #status {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+
+    .complexity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .complexity-table th, .complexity-table td {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .complexity-table th {
+      background: var(--code-bg);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .complexity-table td:first-child { text-align: left; font-weight: 500; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡</div>
+  <div>
+    <h1>Algoritmos de Ordenamiento</h1>
+    <p>Guía visual e interactiva con ejemplos en JavaScript</p>
+  </div>
+</header>
+
+<main>
+
+  <div class="intro">
+    <h2>¿Qué son los algoritmos de ordenamiento?</h2>
+    <p>Son métodos para reorganizar elementos de una lista en un orden determinado (ascendente, descendente, etc.). Son fundamentales en ciencias de la computación y aparecen en casi cualquier aplicación real.</p>
+  </div>
+
+  <!-- Visualizador interactivo -->
+  <div class="demo-section">
+    <h2>Visualizador interactivo</h2>
+    <div class="controls">
+      <select id="algo-select">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick">Quick Sort</option>
+      </select>
+      <input type="number" id="size-input" value="40" min="10" max="80" style="width:80px" title="Cantidad de barras" />
+      <button class="primary" onclick="startSort()">▶ Ordenar</button>
+      <button onclick="generateBars()">↺ Nuevo arreglo</button>
+    </div>
+    <div id="bars-container"></div>
+    <div id="status">Listo. Genera un arreglo y presiona Ordenar.</div>
+  </div>
+
+  <!-- Tarjetas de algoritmos -->
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Bubble Sort</h3>
+        <span class="badge red">O(n²)</span>
+      </div>
+      <div class="card-body">
+        <p>Compara pares adyacentes y los intercambia si están en el orden incorrecto. Simple pero ineficiente.</p>
+        <div class="complexity">
+          <span><span class="label">Tiempo:</span> O(n²)</span>
+          <span><span class="label">Espacio:</span> O(1)</span>
+        </div>
+        <pre><span class="kw">function</span> <span class="fn">bubbleSort</span>(arr) {
+  <span class="kw">const</span> n = arr.length;
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; n<span class="op">-</span><span class="num">1</span>; i++) {
+    <span class="kw">for</span> (<span class="kw">let</span> j = <span class="num">0</span>; j &lt; n<span class="op">-</span>i<span class="op">-</span><span class="num">1</span>; j++) {
+      <span class="kw">if</span> (arr[j] <span class="op">&gt;</span> arr[j<span class="op">+</span><span class="num">1</span>]) {
+        [arr[j], arr[j<span class="op">+</span><span class="num">1</span>]] =
+          [arr[j<span class="op">+</span><span class="num">1</span>], arr[j]];
+      }
+    }
+  }
+  <span class="kw">return</span> arr;
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Selection Sort</h3>
+        <span class="badge red">O(n²)</span>
+      </div>
+      <div class="card-body">
+        <p>Encuentra el elemento mínimo del subarreglo no ordenado y lo mueve al inicio.</p>
+        <div class="complexity">
+          <span><span class="label">Tiempo:</span> O(n²)</span>
+          <span><span class="label">Espacio:</span> O(1)</span>
+        </div>
+        <pre><span class="kw">function</span> <span class="fn">selectionSort</span>(arr) {
+  <span class="kw">const</span> n = arr.length;
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; n; i++) {
+    <span class="kw">let</span> min = i;
+    <span class="kw">for</span> (<span class="kw">let</span> j = i<span class="op">+</span><span class="num">1</span>; j &lt; n; j++) {
+      <span class="kw">if</span> (arr[j] &lt; arr[min])
+        min = j;
+    }
+    <span class="kw">if</span> (min !== i)
+      [arr[i], arr[min]] =
+        [arr[min], arr[i]];
+  }
+  <span class="kw">return</span> arr;
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Insertion Sort</h3>
+        <span class="badge yellow">O(n²) / O(n)*</span>
+      </div>
+      <div class="card-body">
+        <p>Inserta cada elemento en su posición correcta dentro del subarreglo ya ordenado. Eficiente para listas casi ordenadas.</p>
+        <div class="complexity">
+          <span><span class="label">Tiempo:</span> O(n²)</span>
+          <span><span class="label">Espacio:</span> O(1)</span>
+        </div>
+        <pre><span class="kw">function</span> <span class="fn">insertionSort</span>(arr) {
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i &lt; arr.length; i++) {
+    <span class="kw">const</span> key = arr[i];
+    <span class="kw">let</span> j = i <span class="op">-</span> <span class="num">1</span>;
+    <span class="kw">while</span> (j >= <span class="num">0</span> <span class="op">&amp;&amp;</span> arr[j] > key) {
+      arr[j <span class="op">+</span> <span class="num">1</span>] = arr[j];
+      j<span class="op">--</span>;
+    }
+    arr[j <span class="op">+</span> <span class="num">1</span>] = key;
+  }
+  <span class="kw">return</span> arr;
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Merge Sort</h3>
+        <span class="badge green">O(n log n)</span>
+      </div>
+      <div class="card-body">
+        <p>Divide el arreglo en mitades, ordena cada mitad recursivamente y luego las combina. Estable y predecible.</p>
+        <div class="complexity">
+          <span><span class="label">Tiempo:</span> O(n log n)</span>
+          <span><span class="label">Espacio:</span> O(n)</span>
+        </div>
+        <pre><span class="kw">function</span> <span class="fn">mergeSort</span>(arr) {
+  <span class="kw">if</span> (arr.length <= <span class="num">1</span>) <span class="kw">return</span> arr;
+  <span class="kw">const</span> mid = Math.<span class="fn">floor</span>(arr.length/<span class="num">2</span>);
+  <span class="kw">const</span> L = <span class="fn">mergeSort</span>(arr.<span class="fn">slice</span>(<span class="num">0</span>,mid));
+  <span class="kw">const</span> R = <span class="fn">mergeSort</span>(arr.<span class="fn">slice</span>(mid));
+  <span class="kw">return</span> <span class="fn">merge</span>(L, R);
+}
+
+<span class="kw">function</span> <span class="fn">merge</span>(L, R) {
+  <span class="kw">const</span> res = [];
+  <span class="kw">let</span> i = <span class="num">0</span>, j = <span class="num">0</span>;
+  <span class="kw">while</span> (i &lt; L.length <span class="op">&amp;&amp;</span> j &lt; R.length)
+    res.<span class="fn">push</span>(L[i]&lt;=R[j] ? L[i<span class="op">++</span>] : R[j<span class="op">++</span>]);
+  <span class="kw">return</span> [...res, ...L.<span class="fn">slice</span>(i), ...R.<span class="fn">slice</span>(j)];
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Quick Sort</h3>
+        <span class="badge green">O(n log n)*</span>
+      </div>
+      <div class="card-body">
+        <p>Elige un pivote y particiona el arreglo. Muy rápido en la práctica, aunque O(n²) en el peor caso.</p>
+        <div class="complexity">
+          <span><span class="label">Tiempo:</span> O(n log n)</span>
+          <span><span class="label">Espacio:</span> O(log n)</span>
+        </div>
+        <pre><span class="kw">function</span> <span class="fn">quickSort</span>(arr, lo=<span class="num">0</span>, hi=arr.length<span class="op">-</span><span class="num">1</span>) {
+  <span class="kw">if</span> (lo >= hi) <span class="kw">return</span> arr;
+  <span class="kw">const</span> p = <span class="fn">partition</span>(arr, lo, hi);
+  <span class="fn">quickSort</span>(arr, lo, p<span class="op">-</span><span class="num">1</span>);
+  <span class="fn">quickSort</span>(arr, p<span class="op">+</span><span class="num">1</span>, hi);
+  <span class="kw">return</span> arr;
+}
+
+<span class="kw">function</span> <span class="fn">partition</span>(arr, lo, hi) {
+  <span class="kw">const</span> pivot = arr[hi];
+  <span class="kw">let</span> i = lo;
+  <span class="kw">for</span> (<span class="kw">let</span> j=lo; j&lt;hi; j++) {
+    <span class="kw">if</span> (arr[j] &lt;= pivot)
+      [arr[i<span class="op">++</span>], arr[j]] = [arr[j], arr[i]];
+  }
+  [arr[i], arr[hi]] = [arr[hi], arr[i]];
+  <span class="kw">return</span> i;
+}</pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tabla comparativa -->
+  <div class="demo-section">
+    <h2>Tabla comparativa de complejidades</h2>
+    <table class="complexity-table">
+      <thead>
+        <tr>
+          <th>Algoritmo</th>
+          <th>Mejor caso</th>
+          <th>Caso promedio</th>
+          <th>Peor caso</th>
+          <th>Espacio</th>
+          <th>Estable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Bubble Sort</td>    <td>O(n)</td>        <td>O(n²)</td>      <td>O(n²)</td>      <td>O(1)</td>      <td>✅</td></tr>
+        <tr><td>Selection Sort</td> <td>O(n²)</td>       <td>O(n²)</td>      <td>O(n²)</td>      <td>O(1)</td>      <td>❌</td></tr>
+        <tr><td>Insertion Sort</td> <td>O(n)</td>        <td>O(n²)</td>      <td>O(n²)</td>      <td>O(1)</td>      <td>✅</td></tr>
+        <tr><td>Merge Sort</td>     <td>O(n log n)</td>  <td>O(n log n)</td> <td>O(n log n)</td> <td>O(n)</td>      <td>✅</td></tr>
+        <tr><td>Quick Sort</td>     <td>O(n log n)</td>  <td>O(n log n)</td> <td>O(n²)</td>      <td>O(log n)</td>  <td>❌</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  Hecho con HTML, CSS y JavaScript vanilla · Desplegado en GitHub Pages
+</footer>
+
+<script>
+  let bars = [];
+  let sorting = false;
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  function generateBars() {
+    if (sorting) return;
+    const n = Math.max(10, Math.min(80, parseInt(document.getElementById('size-input').value) || 40));
+    bars = Array.from({ length: n }, () => Math.floor(Math.random() * 140) + 10);
+    renderBars(bars, [], []);
+    document.getElementById('status').textContent = `Arreglo de ${n} elementos generado.`;
+  }
+
+  function renderBars(arr, comparing = [], sorted = []) {
+    const container = document.getElementById('bars-container');
+    container.innerHTML = '';
+    arr.forEach((v, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'bar' + (comparing.includes(i) ? ' comparing' : sorted.includes(i) ? ' sorted' : '');
+      bar.style.height = v + 'px';
+      container.appendChild(bar);
+    });
+  }
+
+  async function startSort() {
+    if (sorting) return;
+    if (bars.length === 0) { generateBars(); await delay(100); }
+    sorting = true;
+    const algo = document.getElementById('algo-select').value;
+    const arr = [...bars];
+    const status = document.getElementById('status');
+
+    const sorters = { bubble: bubbleSort, selection: selectionSort, insertion: insertionSort, merge: mergeSortVis, quick: quickSortVis };
+    status.textContent = `Ejecutando ${document.getElementById('algo-select').selectedOptions[0].text}...`;
+    await sorters[algo](arr);
+    renderBars(arr, [], arr.map((_,i)=>i));
+    status.textContent = `¡Ordenado! ${arr.length} elementos.`;
+    bars = arr;
+    sorting = false;
+  }
+
+  async function bubbleSort(arr) {
+    const n = arr.length;
+    const sorted = [];
+    for (let i = 0; i < n - 1; i++) {
+      for (let j = 0; j < n - i - 1; j++) {
+        renderBars(arr, [j, j+1], sorted);
+        await delay(12);
+        if (arr[j] > arr[j+1]) [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+      }
+      sorted.push(n - 1 - i);
+    }
+  }
+
+  async function selectionSort(arr) {
+    const n = arr.length;
+    const sorted = [];
+    for (let i = 0; i < n; i++) {
+      let min = i;
+      for (let j = i + 1; j < n; j++) {
+        renderBars(arr, [min, j], sorted);
+        await delay(12);
+        if (arr[j] < arr[min]) min = j;
+      }
+      if (min !== i) [arr[i], arr[min]] = [arr[min], arr[i]];
+      sorted.push(i);
+    }
+  }
+
+  async function insertionSort(arr) {
+    const sorted = [0];
+    for (let i = 1; i < arr.length; i++) {
+      const key = arr[i];
+      let j = i - 1;
+      while (j >= 0 && arr[j] > key) {
+        arr[j + 1] = arr[j];
+        renderBars(arr, [j, j+1], sorted);
+        await delay(12);
+        j--;
+      }
+      arr[j + 1] = key;
+      sorted.push(i);
+    }
+  }
+
+  async function mergeSortVis(arr) {
+    await mSplit(arr, 0, arr.length - 1);
+  }
+
+  async function mSplit(arr, lo, hi) {
+    if (lo >= hi) return;
+    const mid = Math.floor((lo + hi) / 2);
+    await mSplit(arr, lo, mid);
+    await mSplit(arr, mid + 1, hi);
+    await mMerge(arr, lo, mid, hi);
+  }
+
+  async function mMerge(arr, lo, mid, hi) {
+    const L = arr.slice(lo, mid + 1);
+    const R = arr.slice(mid + 1, hi + 1);
+    let i = 0, j = 0, k = lo;
+    while (i < L.length && j < R.length) {
+      arr[k++] = L[i] <= R[j] ? L[i++] : R[j++];
+      renderBars(arr, [k-1], []);
+      await delay(10);
+    }
+    while (i < L.length) { arr[k++] = L[i++]; }
+    while (j < R.length) { arr[k++] = R[j++]; }
+  }
+
+  async function quickSortVis(arr) {
+    await qSort(arr, 0, arr.length - 1);
+  }
+
+  async function qSort(arr, lo, hi) {
+    if (lo >= hi) return;
+    const p = await qPartition(arr, lo, hi);
+    await qSort(arr, lo, p - 1);
+    await qSort(arr, p + 1, hi);
+  }
+
+  async function qPartition(arr, lo, hi) {
+    const pivot = arr[hi];
+    let i = lo;
+    for (let j = lo; j < hi; j++) {
+      renderBars(arr, [j, hi], []);
+      await delay(12);
+      if (arr[j] <= pivot) {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        i++;
+      }
+    }
+    [arr[i], arr[hi]] = [arr[hi], arr[i]];
+    return i;
+  }
+
+  // Init
+  generateBars();
+</script>
+</body>
+</html>
